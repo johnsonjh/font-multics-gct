@@ -2,24 +2,11 @@
 import fontforge
 import os
 import re
-import math
 
 # --- Constants ---
 SCALE = 20
-Y_OFFSET = 355
-STROKE_WIDTH = 15 
-
-def get_offset_point(p1, p2, width):
-    dx = p2[0] - p1[0]
-    dy = p2[1] - p1[1]
-    length = math.sqrt(dx*dx + dy*dy)
-    if length == 0:
-        return p1, p1
-    
-    odx = -dy / length * width / 2.0
-    ody = dx / length * width / 2.0
-    
-    return (p1[0] + odx, p1[1] + ody), (p1[0] - odx, p1[1] - ody)
+Y_OFFSET = 0
+STROKE_WIDTH = 15
 
 def convert_gct_to_sfd(input_path, output_path):
     font = fontforge.font()
@@ -96,41 +83,24 @@ def convert_gct_to_sfd(input_path, output_path):
                         print(f"Warning: Could not parse coordinates in shift: {line}")
                 else: # command == "end"
                     if current_glyph:
-                        # Manually create the stroke outlines
+                        # Draw all collected strokes as open contours
                         for stroke_points in all_strokes:
                             if not stroke_points or len(stroke_points) < 2:
                                 continue
-                            
                             scaled_points = [(p[0] * SCALE, p[1] * SCALE + Y_OFFSET) for p in stroke_points]
-                            
-                            outline_points1 = []
-                            outline_points2 = []
-                            
-                            for i in range(len(scaled_points) - 1):
-                                p1 = scaled_points[i]
-                                p2 = scaled_points[i+1]
-                                
-                                op1, op2 = get_offset_point(p1, p2, STROKE_WIDTH)
-                                outline_points1.append(op1)
-                                outline_points2.append(op2)
-
-                            if outline_points1 and outline_points2:
-                                contour = fontforge.contour()
-                                contour.moveTo(*outline_points1[0])
-                                for point in outline_points1[1:]:
-                                    contour.lineTo(*point)
-                                
-                                outline_points2.reverse()
-                                for point in outline_points2:
-                                    contour.lineTo(*point)
-                                
-                                contour.closed = True
-                                current_glyph.layers[1] += contour
-
+                            contour = fontforge.contour()
+                            contour.moveTo(*scaled_points[0])
+                            for point in scaled_points[1:]:
+                                contour.lineTo(*point)
+                            current_glyph.layers[1] += contour
+                        
                         # Finalize the glyph
                         current_glyph.width = x * SCALE
+                        current_glyph.stroke("circular", STROKE_WIDTH)
                         current_glyph.removeOverlap()
                         current_glyph.correctDirection()
+                        # Move the finished glyph into its final position
+                        current_glyph.transform((1, 0, 0, 1, 0, 355))
 
                     in_glyph = False
                     current_glyph = None
