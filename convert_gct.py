@@ -5,8 +5,8 @@ import re
 
 # --- Constants ---
 SCALE = 20
-Y_OFFSET = 0
-STROKE_WIDTH = 15
+Y_OFFSET = 200
+STROKE_WIDTH = 15 
 
 def convert_gct_to_sfd(input_path, output_path):
     font = fontforge.font()
@@ -99,8 +99,6 @@ def convert_gct_to_sfd(input_path, output_path):
                         current_glyph.stroke("circular", STROKE_WIDTH)
                         current_glyph.removeOverlap()
                         current_glyph.correctDirection()
-                        # Move the finished glyph into its final position
-                        current_glyph.transform((1, 0, 0, 1, 0, 355))
 
                     in_glyph = False
                     current_glyph = None
