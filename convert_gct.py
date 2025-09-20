@@ -6,7 +6,7 @@ import re
 # --- Constants ---
 SCALE = 20
 Y_OFFSET = 200
-STROKE_WIDTH = 15 
+STROKE_WIDTH = 15
 
 def convert_gct_to_sfd(input_path, output_path):
     font = fontforge.font()
@@ -53,10 +53,10 @@ def convert_gct_to_sfd(input_path, output_path):
         if line.endswith(":"):
             glyph_name = line[:-1]
             std_name = name_map.get(glyph_name, glyph_name)
-            
+
             current_glyph = font.createChar(-1, std_name)
             print(f"Processing glyph: {glyph_name} -> {std_name}")
-            
+
             x, y = 0, 0
             in_glyph = True
             all_strokes = []
@@ -93,7 +93,7 @@ def convert_gct_to_sfd(input_path, output_path):
                             for point in scaled_points[1:]:
                                 contour.lineTo(*point)
                             current_glyph.layers[1] += contour
-                        
+
                         # Finalize the glyph
                         current_glyph.width = x * SCALE
                         current_glyph.stroke("circular", STROKE_WIDTH)
@@ -102,7 +102,7 @@ def convert_gct_to_sfd(input_path, output_path):
 
                     in_glyph = False
                     current_glyph = None
-            
+
             elif command == "vector":
                 if not current_stroke:
                     current_stroke.append((x,y))
