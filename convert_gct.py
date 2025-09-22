@@ -2,6 +2,7 @@
 import fontforge
 import os
 import re
+import argparse
 
 # --- Constants ---
 SCALE = 20
@@ -9,13 +10,31 @@ Y_OFFSET = 200
 STROKE_WIDTH = 15
 
 
+def gct_name_to_font_name(gct_name):
+    # gct_gothic_english_ -> GCTGothicEnglish
+    base_name = gct_name.replace("gct_", "").strip("_")
+    parts = base_name.split("_")
+    return "GCT" + "".join([p.capitalize() for p in parts])
+
+
+def gct_name_to_family_name(gct_name):
+    # gct_gothic_english_ -> GCT Gothic English
+    base_name = gct_name.replace("gct_", "").strip("_")
+    parts = base_name.split("_")
+    return "GCT " + " ".join([p.capitalize() for p in parts])
+
+
 def convert_gct_to_sfd(input_path, output_path):
+    font_name_base = os.path.basename(input_path)
+    font_name = gct_name_to_font_name(font_name_base)
+    family_name = gct_name_to_family_name(font_name_base)
+
     font = fontforge.font()
-    font.fontname = "GCTGothicEnglish"
-    font.familyname = "GCT Gothic English"
-    font.fullname = "GCT Gothic English"
+    font.fontname = font_name
+    font.familyname = family_name
+    font.fullname = family_name
     font.weight = "Regular"
-    font.copyright = "Converted from Multics gct_gothic_english"
+    font.copyright = f"Converted from Multics {font_name_base}"
     font.em = 1000
 
     name_map = {
@@ -152,6 +171,9 @@ def convert_gct_to_sfd(input_path, output_path):
 
 
 if __name__ == "__main__":
-    input_file = os.path.join(os.path.dirname(__file__), "gct_gothic_english_")
-    output_file = os.path.join(os.path.dirname(__file__), "GCTGothicEnglish.sfd")
-    convert_gct_to_sfd(input_file, output_file)
+    parser = argparse.ArgumentParser(description="Convert GCT font to SFD.")
+    parser.add_argument("input", help="Input GCT file path.")
+    parser.add_argument("output", help="Output SFD file path.")
+    args = parser.parse_args()
+
+    convert_gct_to_sfd(args.input, args.output)
