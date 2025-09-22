@@ -12,13 +12,13 @@ STROKE_WIDTH = 15
 def gct_name_to_font_name(gct_name):
     base_name = gct_name.replace("gct_", "").strip("_")
     parts = base_name.split("_")
-    return "GCT" + "".join([p.capitalize() for p in parts])
+    return "GCT_stroke" + "".join([p.capitalize() for p in parts])
 
 
 def gct_name_to_family_name(gct_name):
     base_name = gct_name.replace("gct_", "").strip("_")
     parts = base_name.split("_")
-    return "GCT " + " ".join([p.capitalize() for p in parts])
+    return "GCT Stroke" + " ".join([p.capitalize() for p in parts])
 
 
 def convert_gct_to_sfd(input_path, output_path):
