@@ -92,6 +92,11 @@ xstrerror_l (int errnum)
 static const char *
 xstrsignal (int sig)
 {
+#if defined(__MINGW32__) || defined(__MINGW64__)
+  static char buf[DEF_EMAXLEN];
+  snprintf(buf, sizeof buf, "Signal %d", sig);
+  return buf;
+#else
   int saved = errno, n_buf;
   const char * ret = strsignal (sig);
   static char buf [DEF_EMAXLEN];
@@ -103,6 +108,7 @@ xstrsignal (int sig)
   errno = saved;
 
   return ret;
+#endif
 }
 
 int main (int argc, char * * argv)
