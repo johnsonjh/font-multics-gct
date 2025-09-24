@@ -19,7 +19,7 @@
 # define _OPENBSD_SOURCE
 #endif
 #if !defined(__BSD_VISIBLE)
-# define __BSD_VISIBLE
+# define __BSD_VISIBLE 1
 #endif
 
 #include <errno.h>
