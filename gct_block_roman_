@@ -513,7 +513,7 @@ H:
           end
 
 I:
-          vector   6  0^M
+          vector   6   0
           shift    0  -8
           vector  -6   0
           shift    3   0
@@ -595,9 +595,9 @@ Q:
           vector  -2   0
           vector  -2  -2
           vector   0  -4
-          vector   2   -2^M
+          vector   2  -2
           vector   2   0
-          vector   2  2^M
+          vector   2   2
           vector   0   4
           shift   -3  -4
           vector   1   0
