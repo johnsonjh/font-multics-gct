@@ -134,12 +134,13 @@ int main (int argc, char * * argv)
 
   errint = (int)errnum;
 
-  int xksh = (256 + 1 <= errint && errint < 256 + NSIG);
-  int xsig = (128 + 1 <= errint && errint < 128 + NSIG) || xksh;
-  int errx = xsig ? errint - (xksh ? 256 : 128) : errint;
+  int xysh = (256 + 128 + 1 <= errint && errint < 256 + 128 + NSIG);
+  int xksh = (! xysh && 256 + 1 <= errint && errint < 256 + NSIG);
+  int xsig = (128 + 1 <= errint && errint < 128 + NSIG) || xksh || xysh;
+  int errx = xsig ? (xysh ? errint - 256 - 128 : (xksh ? errint - 256 : errint - 128)) : errint;
 
   const char *(* msgfn)(int) = xsig ? xstrsignal : xstrerror_l;
-  const char * lbl = xsig ? (xksh ? "ksh93 signal" : "signal") : "Error";
+  const char * lbl = xsig ? (xysh ? "yash signal" : xksh ? "ksh93 signal" : "signal") : "Error";
   const char * msg = msgfn (errx);
 
   return fprintf (stdout, errnum ? "%s (%s %d)\n" : "Success\n", errnum ? msg : 0, lbl, errx), EXIT_SUCCESS;
