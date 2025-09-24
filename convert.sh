@@ -14,10 +14,10 @@ check_for() {
   done
 }
 
-check_for awk cc fontforge python3 sed
+check_for "${AWK:-awk}" "${CC:-cc}" "${SED:-sed}" "fontforge" "python3"
 
 test -x ./errnum || {
-  cc -o errnum errnum.c || {
+  "${CC:-cc}" -o errnum errnum.c || {
     printf '%s\n' "FATAL: errnum.c compilation failed"
     exit 1
   }
@@ -25,9 +25,9 @@ test -x ./errnum || {
 
 for gct_file in gct_*_; do
   if [ -f "${gct_file:?}" ]; then
-    base_name=$(printf '%s\n' "${gct_file:?}" | sed 's/gct_//' | sed 's/_$//')
+    base_name=$(printf '%s\n' "${gct_file:?}" | "${SED:-sed}" 's/gct_//' | "${SED:-sed}" 's/_$//')
     sfd_name="GCT$(printf '%s\n' "${base_name:?}" \
-      | awk -F_ ' { for (i=1; i <= NF; i++) printf "%s", toupper (substr ($i, 1, 1)) substr ($i, 2) }')"
+      | "${AWK:-awk}" -F_ ' { for (i=1; i <= NF; i++) printf "%s", toupper (substr ($i, 1, 1)) substr ($i, 2) }')"
     printf 'Converting %s:' "${sfd_name:?}"
 
     printf '\t %s' " Stroke: "; printf '%s\n' "STROKE" "======" "" >> "${sfd_name:?}.log"
