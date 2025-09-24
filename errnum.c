@@ -26,8 +26,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #if defined(__APPLE__)
 # include <xlocale.h>
+#endif
+
+#if defined(__FreeBSD__)
+# include <sys/sys/signal.h>
+#endif
+
+#if !defined(NSIG)
+# error NSIG undefined
 #endif
 
 #define DEF_EMAXLEN 32767
