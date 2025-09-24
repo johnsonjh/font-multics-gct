@@ -1,5 +1,8 @@
 /clean
 /convert
+*.core
+core
+core-*
 /errnum
 /*.log
 /*.otf

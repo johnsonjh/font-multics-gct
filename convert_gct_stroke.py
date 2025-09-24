@@ -133,7 +133,10 @@ def convert_gct_to_sfd(input_path, output_path):
                         y += dy
                         current_stroke.append((x, y))
                     except (ValueError, IndexError):
-                        print(f"Warning: Could not parse coordinates in shift: {line}", flush=True)
+                        print(
+                            f"Warning: Could not parse coordinates in shift: {line}",
+                            flush=True,
+                        )
                 else:
                     if current_glyph:
                         assembled = new_temp_glyph()
@@ -165,10 +168,6 @@ def convert_gct_to_sfd(input_path, output_path):
                         current_glyph.width = x * SCALE
                         current_glyph.correctDirection()
 
-                        for g in list(font.glyphs()):
-                            if g.glyphname.startswith(".tmp_"):
-                                font.removeGlyph(g.glyphname)
-
                     in_glyph = False
                     current_glyph = None
 
@@ -181,7 +180,14 @@ def convert_gct_to_sfd(input_path, output_path):
                     y += dy
                     current_stroke.append((x, y))
                 except (ValueError, IndexError):
-                    print(f"Warning: Could not parse coordinates in vector: {line}", flush=True)
+                    print(
+                        f"Warning: Could not parse coordinates in vector: {line}",
+                        flush=True,
+                    )
+
+    for g in list(font.glyphs()):
+        if g.glyphname.startswith(".tmp_"):
+            font.removeGlyph(g.glyphname)
 
     font.save(output_path)
     print(f"Font saved to {output_path}", flush=True)

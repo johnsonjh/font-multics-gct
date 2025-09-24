@@ -5,23 +5,30 @@ test _`echo asdf 2>/dev/null` != _asdf >/dev/null &&\
   printf '%s\n' "FATAL: Using csh as sh is not supported." &&\
   exit 1
 
+export POSIXLY_CORRECT=1
+
 trap '' SEGV > /dev/null 2>&1
 trap '' BUS  > /dev/null 2>&1
 
-check_for() {
+check_for()
+{
   for program; do
     if ! command -v "${program:?}" > /dev/null 2>&1; then
-      printf '%s\n' "FATAL: ${program:?} not found" >&2
+      printf 'FATAL: %s\n' "${program:?} not found" >&2
       exit 1
     fi
   done
 }
 
-check_for "${AWK:-awk}" "${CC:-cc}" "${SED:-sed}" "fontforge" "python3"
+check_for "${AWK:-awk}" "${CC:-cc}" "${GREP:-grep}" "${SED:-sed}" "fontforge" "python3"
+
+test -x ./clean.sh && {
+  ./clean.sh || :
+}
 
 test -x ./errnum || {
   "${CC:-cc}" -o errnum errnum.c || {
-    printf '%s\n' "FATAL: errnum.c compilation failed"
+    printf 'FATAL: %s\n' "errnum.c compilation failed" >&2
     exit 1
   }
 }
@@ -52,3 +59,14 @@ for gct_file in gct_*_; do
     printf '%s\n' ""
   fi
 done
+
+_E=$(
+  for log in ./*.log; do
+    # shellcheck disable=SC2016
+    "${GREP:-grep}" "^Glyph processing error for " "${log:?}" 2> /dev/null | "${AWK:-awk}" '{ print "*** "$0}' || :
+  done || : 2> /dev/null
+)
+
+test -z "${_E}" || {
+  printf '\n%s\n' "${_E:-}" >&2
+} || :
