@@ -101,7 +101,7 @@ def convert_gct_to_sfd(input_path, output_path):
             std_name = name_map.get(glyph_name, glyph_name)
 
             current_glyph = font.createChar(-1, std_name)
-            print(f"Processing glyph: {glyph_name} -> {std_name}")
+            print(f"Processing glyph: {glyph_name} -> {std_name}", flush=True)
 
             x, y = 0, 0
             in_glyph = True
@@ -126,7 +126,7 @@ def convert_gct_to_sfd(input_path, output_path):
                         y += dy
                         current_stroke.append((x, y))
                     except (ValueError, IndexError):
-                        print(f"Warning: Could not parse coordinates in shift: {line}")
+                        print(f"Warning: Could not parse coordinates in shift: {line}", flush=True)
                 else:
                     if current_glyph:
                         for stroke_points in all_strokes:
@@ -159,10 +159,10 @@ def convert_gct_to_sfd(input_path, output_path):
                     y += dy
                     current_stroke.append((x, y))
                 except (ValueError, IndexError):
-                    print(f"Warning: Could not parse coordinates in vector: {line}")
+                    print(f"Warning: Could not parse coordinates in vector: {line}", flush=True)
 
     font.save(output_path)
-    print(f"Font saved to {output_path}")
+    print(f"Font saved to {output_path}", flush=True)
 
 
 if __name__ == "__main__":
