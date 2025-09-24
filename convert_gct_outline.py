@@ -46,7 +46,7 @@ def get_glyph_chunks(lines):
     return chunks
 
 
-def process_glyph_chunk(glyph_lines, tmpdir, name_map):
+def process_glyph_chunk_original(glyph_lines, tmpdir, name_map, font_name_base):
     glyph_name = glyph_lines[0].strip()[:-1]
     std_name = name_map.get(glyph_name, glyph_name)
 
@@ -54,7 +54,7 @@ def process_glyph_chunk(glyph_lines, tmpdir, name_map):
         font = fontforge.font()
         font.em = 1000
         current_glyph = font.createChar(-1, std_name)
-        print(f"Processing glyph: {glyph_name} -> {std_name}", flush=True)
+        print(f"Processing glyph (standard): {glyph_name} -> {std_name}", flush=True)
 
         x, y = 0, 0
         all_strokes = []
@@ -126,10 +126,117 @@ def process_glyph_chunk(glyph_lines, tmpdir, name_map):
         return None
 
 
-def convert_gct_to_sfd(input_path, output_path):
+def process_glyph_chunk_fallback(glyph_lines, tmpdir, name_map, font_name_base):
+    glyph_name = glyph_lines[0].strip()[:-1]
+    std_name = name_map.get(glyph_name, glyph_name)
+
+    try:
+        font = fontforge.font()
+        font.em = 1000
+        current_glyph = font.createChar(-1, std_name)
+        print(f"Processing glyph (fallback): {glyph_name} -> {std_name}", flush=True)
+
+        x, y = 0, 0
+        all_strokes = []
+        current_stroke = []
+
+        for line in glyph_lines[1:]:
+            line = line.strip()
+            if not line or line.startswith("metric"):
+                continue
+
+            parts = re.split(r"\s+", line)
+            command = parts[0]
+
+            if command == "shift" or command == "end":
+                if current_stroke:
+                    all_strokes.append(current_stroke)
+                current_stroke = []
+
+                if command == "shift":
+                    try:
+                        dx, dy = int(parts[1]), int(parts[2])
+                        x += dx
+                        y += dy
+                        current_stroke.append((x, y))
+                    except (ValueError, IndexError):
+                        print(
+                            f"Warning: Could not parse coordinates in {font_name_base} shift: {line}",
+                            flush=True,
+                        )
+                else:  # end
+                    if current_glyph:
+                        build_font = fontforge.font()
+                        build_font.em = 1000
+                        final_glyph = build_font.createChar(-1, std_name)
+
+                        for stroke_points in all_strokes:
+                            if not stroke_points or len(stroke_points) < 2:
+                                continue
+
+                            stroke_font = fontforge.font()
+                            stroke_font.em = 1000
+                            stroke_glyph = stroke_font.createChar(-1, "temp")
+
+                            scaled_points = [
+                                (p[0] * SCALE, p[1] * SCALE + Y_OFFSET)
+                                for p in stroke_points
+                            ]
+                            contour = fontforge.contour()
+                            contour.moveTo(*scaled_points[0])
+                            for point in scaled_points[1:]:
+                                contour.lineTo(*point)
+                            stroke_glyph.layers[1] += contour
+
+                            stroke_glyph.stroke("circular", STROKE_WIDTH)
+                            stroke_glyph.removeOverlap()
+
+                            for c in stroke_glyph.layers[1]:
+                                final_glyph.layers[1] += c
+
+                        final_glyph.removeOverlap()
+                        final_glyph.correctDirection()
+
+                        current_glyph.clear()
+                        for c in final_glyph.layers[1]:
+                            current_glyph.layers[1] += c
+
+                        current_glyph.width = x * SCALE
+
+            elif command == "vector":
+                if not current_stroke:
+                    current_stroke.append((x, y))
+                try:
+                    dx, dy = int(parts[1]), int(parts[2])
+                    x += dx
+                    y += dy
+                    current_stroke.append((x, y))
+                except (ValueError, IndexError):
+                    print(
+                        f"Warning: Could not parse coordinates in {font_name_base} vector: {line}",
+                        flush=True,
+                    )
+
+        glyph_sfd_path = os.path.join(tmpdir, f"{std_name}.sfd")
+        font.save(glyph_sfd_path)
+        return glyph_sfd_path
+    except Exception as e:
+        print(f"Error processing glyph {glyph_name}: {e}", flush=True)
+        return None
+
+
+def convert_gct_to_sfd(input_path, output_path, reverse=False):
     font_name_base = os.path.basename(input_path)
     font_name = gct_name_to_font_name(font_name_base)
     family_name = gct_name_to_family_name(font_name_base)
+
+    if reverse:
+        primary_method = process_glyph_chunk_fallback
+        fallback_method = process_glyph_chunk_original
+        print("--- Using REVERSED method order (fallback first) ---", flush=True)
+    else:
+        primary_method = process_glyph_chunk_original
+        fallback_method = process_glyph_chunk_fallback
 
     name_map = {
         "bel": "bell",
@@ -185,30 +292,60 @@ def convert_gct_to_sfd(input_path, output_path):
     glyph_chunks = get_glyph_chunks(lines)
     tmpdir = tempfile.mkdtemp()
     try:
-        worker_func = partial(process_glyph_chunk, tmpdir=tmpdir, name_map=name_map)
+        print(
+            f"--- Pass 1: Processing {len(glyph_chunks)} glyphs with primary method ---",
+            flush=True,
+        )
+        worker_func_pass1 = partial(
+            primary_method,
+            tmpdir=tmpdir,
+            name_map=name_map,
+            font_name_base=font_name_base,
+        )
 
-        print(f"Processing {len(glyph_chunks)} glyphs...", flush=True)
         glyph_sfd_paths = []
-        failed_glyphs = []
+        failed_chunks = []
         with multiprocessing.Pool(1) as pool:
             results = [
-                pool.apply_async(worker_func, (chunk,)) for chunk in glyph_chunks
+                pool.apply_async(worker_func_pass1, (chunk,)) for chunk in glyph_chunks
             ]
             for res, chunk in zip(results, glyph_chunks):
                 try:
-                    result = res.get(timeout=2)
+                    result = res.get(timeout=3)
                     if result:
                         glyph_sfd_paths.append(result)
                     else:
-                        glyph_name = chunk[0].strip()[:-1]
-                        failed_glyphs.append(glyph_name)
-                except multiprocessing.TimeoutError:
-                    glyph_name = chunk[0].strip()[:-1]
-                    print(
-                        f"Glyph processing timeout for {font_name_base}: {glyph_name}",
-                        flush=True,
-                    )
-                    failed_glyphs.append(glyph_name)
+                        failed_chunks.append(chunk)
+                except Exception:
+                    failed_chunks.append(chunk)
+
+        final_failed_glyphs = []
+        if failed_chunks:
+            print(
+                f"\n--- Pass 2: Retrying {len(failed_chunks)} failed glyphs with fallback method ---",
+                flush=True,
+            )
+            worker_func_pass2 = partial(
+                fallback_method,
+                tmpdir=tmpdir,
+                name_map=name_map,
+                font_name_base=font_name_base,
+            )
+
+            with multiprocessing.Pool(1) as pool:
+                results = [
+                    pool.apply_async(worker_func_pass2, (chunk,))
+                    for chunk in failed_chunks
+                ]
+                for res, chunk in zip(results, failed_chunks):
+                    try:
+                        result = res.get(timeout=3)
+                        if result:
+                            glyph_sfd_paths.append(result)
+                        else:
+                            final_failed_glyphs.append(chunk[0].strip()[:-1])
+                    except Exception:
+                        final_failed_glyphs.append(chunk[0].strip()[:-1])
 
         font = fontforge.font()
         font.fontname = font_name
@@ -233,11 +370,11 @@ def convert_gct_to_sfd(input_path, output_path):
                 f"Font saved to {output_path} with {successful_glyphs} glyphs.",
                 flush=True,
             )
-            if failed_glyphs:
-                glyph_str = "glyph" if len(failed_glyphs) == 1 else "glyphs"
-                error_str = "error" if len(failed_glyphs) == 1 else "errors"
+            if final_failed_glyphs:
+                glyph_str = "glyph" if len(final_failed_glyphs) == 1 else "glyphs"
+                error_str = "error" if len(final_failed_glyphs) == 1 else "errors"
                 print(
-                    f"Glyph processing {error_str} for {font_name_base}: {len(failed_glyphs)} {glyph_str} failed ({', '.join(failed_glyphs)})",
+                    f"Glyph processing {error_str} for {font_name_base}: {len(final_failed_glyphs)} {glyph_str} failed ({', '.join(final_failed_glyphs)})",
                     flush=True,
                 )
         else:
@@ -250,6 +387,12 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Convert GCT font to SFD.")
     parser.add_argument("input", help="Input GCT file path.")
     parser.add_argument("output", help="Output SFD file path.")
+    parser.add_argument(
+        "-r",
+        "--reverse",
+        action="store_true",
+        help="Reverse the order of glyph processing methods.",
+    )
     args = parser.parse_args()
 
-    convert_gct_to_sfd(args.input, args.output)
+    convert_gct_to_sfd(args.input, args.output, reverse=args.reverse)
