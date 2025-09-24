@@ -22,6 +22,7 @@ lint:
 	@rm -f errnum
 	cppcheck --quiet --force --check-level=exhaustive *.c
 	shellcheck -o any,all *.sh
+	black --check *.py
 	codespell -L Groupe .
 	reuse lint -q || reuse lint
 
