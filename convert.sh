@@ -5,6 +5,9 @@ test _`echo asdf 2>/dev/null` != _asdf >/dev/null &&\
   printf '%s\n' "FATAL: Using csh as sh is not supported." &&\
   exit 1
 
+trap '' SEGV > /dev/null 2>&1
+trap '' BUS  > /dev/null 2>&1
+
 check_for() {
   for program; do
     if ! command -v "${program:?}" > /dev/null 2>&1; then
@@ -26,6 +29,7 @@ test -x ./errnum || {
 for gct_file in gct_*_; do
   if [ -f "${gct_file:?}" ]; then
     base_name=$(printf '%s\n' "${gct_file:?}" | "${SED:-sed}" 's/gct_//' | "${SED:-sed}" 's/_$//')
+    # shellcheck disable=SC2016
     sfd_name="GCT$(printf '%s\n' "${base_name:?}" \
       | "${AWK:-awk}" -F_ ' { for (i=1; i <= NF; i++) printf "%s", toupper (substr ($i, 1, 1)) substr ($i, 2) }')"
     printf 'Converting %s:' "${sfd_name:?}"
