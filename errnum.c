@@ -127,5 +127,5 @@ int main (int argc, char * * argv)
   const char * lbl = xsig ? (xksh ? "ksh93 signal" : "signal") : "Error";
   const char * msg = msgfn (errx);
 
-  return fprintf (stdout, errnum ? "%s (%s %d)\n" : "%s\n", msg, lbl, errx), EXIT_SUCCESS;
+  return fprintf (stdout, errnum ? "%s (%s %d)\n" : "Success\n", errnum ? msg : 0, lbl, errx), EXIT_SUCCESS;
 }
