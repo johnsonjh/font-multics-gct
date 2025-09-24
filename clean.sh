@@ -1,3 +1,3 @@
 #!/usr/bin/env sh
 set -x
-rm -f *.sfd *.ttf
+rm -f ./errnum ./*.sfd ./*.ttf ./*.log ./core-* ./*.core ./core

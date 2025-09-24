@@ -5,20 +5,20 @@ import re
 import argparse
 
 SCALE = 20
-Y_OFFSET = 200
+Y_OFFSET = 380
 STROKE_WIDTH = 15
 
 
 def gct_name_to_font_name(gct_name):
     base_name = gct_name.replace("gct_", "").strip("_")
     parts = base_name.split("_")
-    return "GCT" + "".join([p.capitalize() for p in parts])
+    return "GCT_stroke" + "".join([p.capitalize() for p in parts])
 
 
 def gct_name_to_family_name(gct_name):
     base_name = gct_name.replace("gct_", "").strip("_")
     parts = base_name.split("_")
-    return "GCT " + " ".join([p.capitalize() for p in parts])
+    return "GCT Stroke" + " ".join([p.capitalize() for p in parts])
 
 
 def convert_gct_to_sfd(input_path, output_path):
@@ -33,6 +33,7 @@ def convert_gct_to_sfd(input_path, output_path):
     font.weight = "Regular"
     font.copyright = f"Converted from Multics {font_name_base}"
     font.em = 1000
+    font.encoding = "UnicodeFull"
 
     name_map = {
         "bel": "bell",
@@ -90,6 +91,12 @@ def convert_gct_to_sfd(input_path, output_path):
     in_glyph = False
     all_strokes = []
     current_stroke = []
+    tmp_counter = 0
+
+    def new_temp_glyph():
+        nonlocal tmp_counter
+        tmp_counter += 1
+        return font.createChar(-1, f".tmp_{tmp_counter:06d}")
 
     for line in lines:
         line = line.strip()
@@ -114,7 +121,7 @@ def convert_gct_to_sfd(input_path, output_path):
             parts = re.split(r"\s+", line)
             command = parts[0]
 
-            if command == "shift" or command == "end":
+            if command in ("shift", "end"):
                 if current_stroke:
                     all_strokes.append(current_stroke)
                 current_stroke = []
@@ -129,23 +136,38 @@ def convert_gct_to_sfd(input_path, output_path):
                         print(f"Warning: Could not parse coordinates in shift: {line}")
                 else:
                     if current_glyph:
+                        assembled = new_temp_glyph()
+
                         for stroke_points in all_strokes:
-                            if not stroke_points or len(stroke_points) < 2:
+                            if len(stroke_points) < 2:
                                 continue
+
+                            tmp = new_temp_glyph()
+                            contour = fontforge.contour()
                             scaled_points = [
                                 (p[0] * SCALE, p[1] * SCALE + Y_OFFSET)
                                 for p in stroke_points
                             ]
-                            contour = fontforge.contour()
                             contour.moveTo(*scaled_points[0])
-                            for point in scaled_points[1:]:
-                                contour.lineTo(*point)
-                            current_glyph.layers[1] += contour
+                            for pt in scaled_points[1:]:
+                                contour.lineTo(*pt)
+                            tmp.layers[1] += contour
 
+                            tmp.correctDirection()
+                            tmp.stroke("circular", STROKE_WIDTH)
+                            tmp.correctDirection()
+                            tmp.removeOverlap()
+                            tmp.correctDirection()
+
+                            assembled.layers[1] += tmp.layers[1]
+
+                        current_glyph.layers[1] = assembled.layers[1]
                         current_glyph.width = x * SCALE
-                        current_glyph.stroke("circular", STROKE_WIDTH)
-                        current_glyph.removeOverlap()
                         current_glyph.correctDirection()
+
+                        for g in list(font.glyphs()):
+                            if g.glyphname.startswith(".tmp_"):
+                                font.removeGlyph(g.glyphname)
 
                     in_glyph = False
                     current_glyph = None
