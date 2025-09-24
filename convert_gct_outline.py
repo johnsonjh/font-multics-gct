@@ -196,7 +196,7 @@ def convert_gct_to_sfd(input_path, output_path):
             ]
             for res, chunk in zip(results, glyph_chunks):
                 try:
-                    result = res.get(timeout=1)
+                    result = res.get(timeout=2)
                     if result:
                         glyph_sfd_paths.append(result)
                     else:
