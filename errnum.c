@@ -31,12 +31,21 @@
 # include <xlocale.h>
 #endif
 
-#if defined(__FreeBSD__)
+#if defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__)
 # include <sys/sys/signal.h>
+#endif
+
+#if defined(__illumos__) || ((defined(__sun) || defined(__sun__)) && (defined(__SVR4) || defined(__svr4__)))
+# include <sys/signal.h>
 #endif
 
 #if !defined(NSIG)
 # error NSIG undefined
+#endif
+
+#if NSIG < 128
+# undef NSIG
+# define NSIG 128
 #endif
 
 #define DEF_EMAXLEN 32767
