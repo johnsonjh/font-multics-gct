@@ -21,6 +21,9 @@
 #if !defined(__BSD_VISIBLE)
 # define __BSD_VISIBLE 1
 #endif
+#if !defined(__EXTENSIONS__)
+# define __EXTENSIONS__
+#endif
 
 #include <errno.h>
 #include <limits.h>
@@ -36,7 +39,6 @@
 
 #if defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__) || defined(__illumos__) || \
   ((defined(__sun) || defined(__sun__)) && (defined(__SVR4) || defined(__svr4__)))
-# define __EXTENSIONS__
 # include <sys/signal.h>
 #endif
 
