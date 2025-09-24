@@ -52,7 +52,7 @@ xstrerror_l (int errnum)
   locale_t loc = uselocale ((locale_t)0);
 # endif
   locale_t copy = (loc == LC_GLOBAL_LOCALE ? duplocale (loc) : loc);
-  ret = copy ? (ret = strerror_l(errnum, copy), (loc == LC_GLOBAL_LOCALE ? (freelocale(copy), 0) : 0), ret) : ret;
+  ret = copy ? (ret = strerror_l (errnum, copy), (loc == LC_GLOBAL_LOCALE ? (freelocale (copy), 0) : 0), ret) : ret;
 #endif
   ret = ret ? ret : ((n_buf = snprintf (buf, sizeof buf, "Unknown error %d", errnum)) < 0 || (size_t)n_buf >= sizeof buf
             ? (fprintf (stderr, "FATAL: snprintf buffer overflow at %s[%s:%d]\n", __func__, __FILE__, __LINE__),
