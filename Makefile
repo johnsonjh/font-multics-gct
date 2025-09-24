@@ -16,4 +16,13 @@ clean:
 	if [ "$${status:-}" -eq 14 ]; then \
 	{ printf '%s\n' "flock(1) error - is another instance running?" >&2; exit 1; }; fi
 
+lint:
+	@rm -f errnum
+	scan-build --status-bugs make errnum
+	@rm -f errnum
+	cppcheck --quiet --force --check-level=exhaustive *.c
+	shellcheck -o any,all *.sh
+	codespell -L Groupe .
+	reuse lint -q || reuse lint
+
 .NOT_PARALLEL:
