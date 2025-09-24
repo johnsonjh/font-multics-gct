@@ -15,8 +15,7 @@ fi
 
 export POSIXLY_CORRECT=1
 
-trap '' SEGV > /dev/null 2>&1
-trap '' BUS  > /dev/null 2>&1
+ulimit -c 0 > /dev/null 2>&1
 
 check_for()
 {
@@ -40,6 +39,9 @@ test -x ./errnum || {
     exit 1
   }
 }
+
+trap '' SEGV > /dev/null 2>&1
+trap '' BUS  > /dev/null 2>&1
 
 for gct_file in gct_*_; do
   if [ -f "${gct_file:?}" ]; then
@@ -71,7 +73,14 @@ done
 _E=$(
   for log in ./*.log; do
     # shellcheck disable=SC2016
-    "${GREP:-grep}" "^Glyph processing error for " "${log:?}" 2> /dev/null | "${AWK:-awk}" '{ print "*** "$0}' || :
+    "${GREP:-grep}" "Could not parse coordinates in" "${log:?}" 2> /dev/null \
+      | "${AWK:-awk}" '{ print "*** "$0 }' || :
+  done || : 2> /dev/null
+
+  for log in ./*.log; do
+    # shellcheck disable=SC2016
+    "${GREP:-grep}" "^Glyph processing error" "${log:?}" 2> /dev/null \
+      | "${AWK:-awk}" '{ print "*** "$0 }' || :
   done || : 2> /dev/null
 )
 

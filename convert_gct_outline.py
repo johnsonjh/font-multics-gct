@@ -76,7 +76,7 @@ def process_glyph_chunk(glyph_lines, tmpdir, name_map):
                         current_stroke.append((x, y))
                     except (ValueError, IndexError):
                         print(
-                            f"Warning: Could not parse coordinates in shift: {line}",
+                            f"Warning: Could not parse coordinates in {font_name_base} shift: {line}",
                             flush=True,
                         )
                 else:  # end
@@ -109,7 +109,7 @@ def process_glyph_chunk(glyph_lines, tmpdir, name_map):
                     current_stroke.append((x, y))
                 except (ValueError, IndexError):
                     print(
-                        f"Warning: Could not parse coordinates in vector: {line}",
+                        f"Warning: Could not parse coordinates in {font_name_base} vector: {line}",
                         flush=True,
                     )
 
@@ -230,8 +230,9 @@ def convert_gct_to_sfd(input_path, output_path):
             )
             if failed_glyphs:
                 glyph_str = "glyph" if len(failed_glyphs) == 1 else "glyphs"
+                error_str = "error" if len(failed_glyphs) == 1 else "errors"
                 print(
-                    f"Glyph processing error for {font_name_base}: {len(failed_glyphs)} {glyph_str} failed ({', '.join(failed_glyphs)})",
+                    f"Glyph processing {error_str} for {font_name_base}: {len(failed_glyphs)} {glyph_str} failed ({', '.join(failed_glyphs)})",
                     flush=True,
                 )
         else:

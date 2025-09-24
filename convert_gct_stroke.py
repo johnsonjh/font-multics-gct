@@ -134,7 +134,7 @@ def convert_gct_to_sfd(input_path, output_path):
                         current_stroke.append((x, y))
                     except (ValueError, IndexError):
                         print(
-                            f"Warning: Could not parse coordinates in shift: {line}",
+                            f"Warning: Could not parse coordinates in {font_name_base} shift: {line}",
                             flush=True,
                         )
                 else:
@@ -181,7 +181,7 @@ def convert_gct_to_sfd(input_path, output_path):
                     current_stroke.append((x, y))
                 except (ValueError, IndexError):
                     print(
-                        f"Warning: Could not parse coordinates in vector: {line}",
+                        f"Warning: Could not parse coordinates in {font_name_base} vector: {line}",
                         flush=True,
                     )
 
