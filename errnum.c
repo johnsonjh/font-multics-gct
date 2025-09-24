@@ -36,6 +36,7 @@
 
 #if defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__) || defined(__illumos__) || \
   ((defined(__sun) || defined(__sun__)) && (defined(__SVR4) || defined(__svr4__)))
+# define __EXTENSIONS__
 # include <sys/signal.h>
 #endif
 
