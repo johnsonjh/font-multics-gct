@@ -43,6 +43,12 @@
 #endif
 
 #if !defined(NSIG)
+# if defined(_NSIG)
+#  define NSIG _NSIG
+# endif
+#endif
+
+#if !defined(NSIG)
 # error NSIG undefined
 #endif
 
