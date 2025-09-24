@@ -5,23 +5,23 @@
  * scspell-id: 3a9b1772-98e3-11f0-b710-80ee73e9b8e7
  */
 
-#if defined(_POSIX_C_SOURCE)
+#if defined (_POSIX_C_SOURCE)
 # undef _POSIX_C_SOURCE
 #endif
 #define _POSIX_C_SOURCE 200809L
-#if !defined(_GNU_SOURCE)
+#if !defined (_GNU_SOURCE)
 # define _GNU_SOURCE
 #endif
-#if !defined(_NETBSD_SOURCE)
+#if !defined (_NETBSD_SOURCE)
 # define _NETBSD_SOURCE
 #endif
-#if !defined(_OPENBSD_SOURCE)
+#if !defined (_OPENBSD_SOURCE)
 # define _OPENBSD_SOURCE
 #endif
-#if !defined(__BSD_VISIBLE)
+#if !defined (__BSD_VISIBLE)
 # define __BSD_VISIBLE 1
 #endif
-#if !defined(__EXTENSIONS__)
+#if !defined (__EXTENSIONS__)
 # define __EXTENSIONS__
 #endif
 
@@ -33,22 +33,22 @@
 #include <stdlib.h>
 #include <string.h>
 
-#if defined(__APPLE__)
+#if defined (__APPLE__)
 # include <xlocale.h>
 #endif
 
-#if defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__) || defined(__illumos__) || \
-  ((defined(__sun) || defined(__sun__)) && (defined(__SVR4) || defined(__svr4__)))
+#if defined (__FreeBSD__) || defined (__OpenBSD__) || defined (__NetBSD__) || defined (__illumos__) || \
+  ((defined (__sun) || defined (__sun__)) && (defined (__SVR4) || defined (__svr4__)))
 # include <sys/signal.h>
 #endif
 
-#if !defined(NSIG)
-# if defined(_NSIG)
+#if !defined (NSIG)
+# if defined (_NSIG)
 #  define NSIG _NSIG
 # endif
 #endif
 
-#if !defined(NSIG)
+#if !defined (NSIG)
 # error NSIG undefined
 #endif
 
@@ -66,14 +66,14 @@ xstrerror_l (int errnum)
   const char * ret = NULL;
   static char buf [DEF_EMAXLEN];
 
-#if defined(__APPLE__) || defined(_AIX) || defined(__MINGW32__) || defined(__MINGW64__)
-# if defined(__MINGW32__) || defined(__MINGW64__)
+#if defined (__APPLE__) || defined (_AIX) || defined (__MINGW32__) || defined (__MINGW64__)
+# if defined (__MINGW32__) || defined (__MINGW64__)
   (0 == strerror_s (buf, sizeof buf, errnum)) ? (ret = buf) : (void)0;
 # else
   (0 == strerror_r (errnum, buf, sizeof buf)) ? (ret = buf) : (void)0;
 # endif
 #else
-# if defined(__NetBSD__)
+# if defined (__NetBSD__)
   locale_t loc = LC_GLOBAL_LOCALE;
 # else
   locale_t loc = uselocale ((locale_t)0);
@@ -92,9 +92,9 @@ xstrerror_l (int errnum)
 static const char *
 xstrsignal (int sig)
 {
-#if defined(__MINGW32__) || defined(__MINGW64__)
-  static char buf[DEF_EMAXLEN];
-  snprintf(buf, sizeof buf, "Signal %d", sig);
+#if defined (__MINGW32__) || defined (__MINGW64__)
+  static char buf [DEF_EMAXLEN];
+  (void)snprintf (buf, sizeof buf, "Signal %d", sig);
   return buf;
 #else
   int saved = errno, n_buf;
@@ -111,7 +111,8 @@ xstrsignal (int sig)
 #endif
 }
 
-int main (int argc, char * * argv)
+int
+main (int argc, char * * argv)
 {
   long errnum;
   int errint;
