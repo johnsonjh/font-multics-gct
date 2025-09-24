@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Multics or MIT-0
+# Copyright (c) 2025 Jeffrey H. Johnson
+# Copyright (c) 2025 The DPS8M Development Team
+# scspell-id: 6257834a-9924-11f0-9736-80ee73e9b8e7
+
 import fontforge
 import os
 import re

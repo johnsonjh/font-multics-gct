@@ -1,6 +1,6 @@
 /*
  * vim: filetype=c:tabstop=2:softtabstop=2:shiftwidth=2:ai:expandtab
- * SPDX-License-Identifier: MIT-0
+ * SPDX-License-Identifier: Multics or MIT-0
  * Copyright (c) 2025 Jeffrey H. Johnson
  * scspell-id: 3a9b1772-98e3-11f0-b710-80ee73e9b8e7
  */

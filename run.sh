@@ -1,4 +1,8 @@
 #!/usr/bin/env sh
+# SPDX-License-Identifier: Multics or MIT-0
+# Copyright (c) 2025 Jeffrey H. Johnson
+# Copyright (c) 2025 The DPS8M Development Team
+# scspell-id: aa0756ca-9924-11f0-bb6f-80ee73e9b8e7
 
 # shellcheck disable=SC2006,SC2046,SC2065,SC2116
 test _`echo asdf 2>/dev/null` != _asdf >/dev/null &&\
@@ -15,6 +19,7 @@ fi
 
 export POSIXLY_CORRECT=1
 
+# shellcheck disable=SC3045
 ulimit -c 0 > /dev/null 2>&1
 
 check_for()
