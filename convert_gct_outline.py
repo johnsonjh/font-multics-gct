@@ -11,6 +11,7 @@ import argparse
 import multiprocessing
 import tempfile
 import shutil
+import time
 from functools import partial
 
 SCALE = 20
@@ -49,6 +50,8 @@ def get_glyph_chunks(lines):
 def process_glyph_chunk_original(glyph_lines, tmpdir, name_map, font_name_base):
     glyph_name = glyph_lines[0].strip()[:-1]
     std_name = name_map.get(glyph_name, glyph_name)
+
+    start_time = time.time()
 
     try:
         font = fontforge.font()
@@ -120,15 +123,19 @@ def process_glyph_chunk_original(glyph_lines, tmpdir, name_map, font_name_base):
 
         glyph_sfd_path = os.path.join(tmpdir, f"{std_name}.sfd")
         font.save(glyph_sfd_path)
-        return glyph_sfd_path
+        end_time = time.time()
+        elapsed_ms = (end_time - start_time) * 1000
+        return glyph_sfd_path, elapsed_ms
     except Exception as e:
         print(f"Error processing glyph {glyph_name}: {e}", flush=True)
-        return None
+        return None, None
 
 
 def process_glyph_chunk_fallback(glyph_lines, tmpdir, name_map, font_name_base):
     glyph_name = glyph_lines[0].strip()[:-1]
     std_name = name_map.get(glyph_name, glyph_name)
+
+    start_time = time.time()
 
     try:
         font = fontforge.font()
@@ -219,10 +226,12 @@ def process_glyph_chunk_fallback(glyph_lines, tmpdir, name_map, font_name_base):
 
         glyph_sfd_path = os.path.join(tmpdir, f"{std_name}.sfd")
         font.save(glyph_sfd_path)
-        return glyph_sfd_path
+        end_time = time.time()
+        elapsed_ms = (end_time - start_time) * 1000
+        return glyph_sfd_path, elapsed_ms
     except Exception as e:
         print(f"Error processing glyph {glyph_name}: {e}", flush=True)
-        return None
+        return None, None
 
 
 def convert_gct_to_sfd(input_path, output_path, reverse=False):
@@ -311,9 +320,17 @@ def convert_gct_to_sfd(input_path, output_path, reverse=False):
             ]
             for res, chunk in zip(results, glyph_chunks):
                 try:
-                    result = res.get(timeout=3)
+                    result, elapsed_ms = res.get(timeout=5)
                     if result:
                         glyph_sfd_paths.append(result)
+                        glyph_name_from_chunk = chunk[0].strip()[:-1]
+                        std_name_for_print = name_map.get(
+                            glyph_name_from_chunk, glyph_name_from_chunk
+                        )
+                        print(
+                            f"Glyph '{std_name_for_print}' processing time: {elapsed_ms:.2f} ms",
+                            flush=True,
+                        )
                     else:
                         failed_chunks.append(chunk)
                 except Exception:
@@ -339,9 +356,17 @@ def convert_gct_to_sfd(input_path, output_path, reverse=False):
                 ]
                 for res, chunk in zip(results, failed_chunks):
                     try:
-                        result = res.get(timeout=3)
+                        result, elapsed_ms = res.get(timeout=5)
                         if result:
                             glyph_sfd_paths.append(result)
+                            glyph_name_from_chunk = chunk[0].strip()[:-1]
+                            std_name_for_print = name_map.get(
+                                glyph_name_from_chunk, glyph_name_from_chunk
+                            )
+                            print(
+                                f"Glyph '{std_name_for_print}' processing time: {elapsed_ms:.2f} ms",
+                                flush=True,
+                            )
                         else:
                             final_failed_glyphs.append(chunk[0].strip()[:-1])
                     except Exception:

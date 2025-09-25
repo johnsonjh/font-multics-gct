@@ -8,6 +8,7 @@ import fontforge
 import os
 import re
 import argparse
+import time
 
 SCALE = 20
 Y_OFFSET = 380
@@ -114,6 +115,7 @@ def convert_gct_to_sfd(input_path, output_path):
 
             current_glyph = font.createChar(-1, std_name)
             print(f"Processing glyph: {glyph_name} -> {std_name}", flush=True)
+            start_time = time.time()
 
             x, y = 0, 0
             in_glyph = True
@@ -172,6 +174,13 @@ def convert_gct_to_sfd(input_path, output_path):
                         current_glyph.layers[1] = assembled.layers[1]
                         current_glyph.width = x * SCALE
                         current_glyph.correctDirection()
+
+                        end_time = time.time()
+                        elapsed_ms = (end_time - start_time) * 1000
+                        print(
+                            f"Glyph '{std_name}' processing time: {elapsed_ms:.2f} ms",
+                            flush=True,
+                        )
 
                     in_glyph = False
                     current_glyph = None
