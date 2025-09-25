@@ -92,3 +92,19 @@ _E=$(
 test -z "${_E}" || {
   printf '\n%s\n' "${_E:-}" >&2
 } || :
+
+# shellcheck disable=SC2016
+_itot=$("${GREP:-grep}" -E 'Processing [0-9]+ glyphs' ./*.log 2> /dev/null \
+  | "${AWK:-awk}" '{ for (i = 1; i <= NF; i++)
+                       if ($i == "Processing")
+                         sum += $(i + 1)
+                   } END { print (sum == "" ? 0 : sum) }') 2> /dev/null
+
+# shellcheck disable=SC2016
+_otot=$("${GREP:-grep}" -E 'Font saved to .* with [0-9]+ glyphs' ./*.log 2> /dev/null \
+  | "${AWK:-awk}" '{ for (i = 1; i <= NF; i++)
+                       if ($i == "with")
+                         sum += $(i + 1)
+                   } END { print (sum == "" ? 0 : sum) }') 2> /dev/null
+
+printf '\nSUMMARY: %s\n' "${_itot:-0} total glyphs in, ${_otot:-0} total glyphs out."
