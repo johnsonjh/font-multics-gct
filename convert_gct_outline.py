@@ -84,7 +84,7 @@ def process_glyph_chunk_original(glyph_lines, tmpdir, name_map, font_name_base):
                             f"Warning: Could not parse coordinates in {font_name_base} shift: {line}",
                             flush=True,
                         )
-                else:  # end
+                else:
                     if current_glyph:
                         for stroke_points in all_strokes:
                             if not stroke_points or len(stroke_points) < 2:
@@ -164,7 +164,7 @@ def process_glyph_chunk_fallback(glyph_lines, tmpdir, name_map, font_name_base):
                             f"Warning: Could not parse coordinates in {font_name_base} shift: {line}",
                             flush=True,
                         )
-                else:  # end
+                else:
                     if current_glyph:
                         build_font = fontforge.font()
                         build_font.em = 1000
