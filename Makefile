@@ -5,16 +5,12 @@
 
 .PHONY: all clean
 all run:
-	@./run.sh; status=$$?; \
-	if [ "$${status:-}" -eq 14 ]; then \
-	{ printf '%s\n' "flock(1) error - is another instance running?" >&2; exit 1; }; fi
+	@./run.sh
 
 errnum: errnum.c
 
 clean:
-	@./clean.sh; status=$$?; \
-	if [ "$${status:-}" -eq 14 ]; then \
-	{ printf '%s\n' "flock(1) error - is another instance running?" >&2; exit 1; }; fi
+	@./clean.sh
 
 lint:
 	@rm -f errnum
