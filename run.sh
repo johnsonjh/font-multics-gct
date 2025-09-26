@@ -10,6 +10,7 @@ test _`echo asdf 2>/dev/null` != _asdf >/dev/null &&\
   exit 1
 
 export POSIXLY_CORRECT=1
+export TZ=UTC
 
 # shellcheck disable=SC3045
 ulimit -c 0 > /dev/null 2>&1
@@ -24,11 +25,13 @@ check_for()
   done
 }
 
-check_for "${AWK:-awk}" "${CC:-cc}" "${GREP:-grep}" "${SED:-sed}" "fontforge" "python3"
+check_for "${AWK:-awk}" "${CC:-cc}" "${DATE:-date}" "${GREP:-grep}" "${SED:-sed}" "fontforge" "python3"
 
-test -x ./clean.sh && {
-  ./clean.sh || :
-}
+if [ "$1" != "ttf" ]; then
+  test -x ./clean.sh && {
+    ./clean.sh || :
+  }
+fi
 
 test -x ./errnum || {
   "${CC:-cc}" -o errnum errnum.c || {
@@ -36,6 +39,24 @@ test -x ./errnum || {
     exit 1
   }
 }
+
+if [ "$1" = "ttf" ]; then
+  for sfd_file in GCT*.sfd; do
+    case "${sfd_file:?}" in
+      *Stroke*) continue ;;
+      "GCT*.sfd") { printf 'FATAL: %s\n' "No valid 'GCT*.sfd' files found" >&2; exit 1; } ;;
+      *) : ;;
+    esac
+    sfd_name="${sfd_file%.*}"
+    printf 'Converting %s: \t%s' "${sfd_name:?}" "TrueType: "; printf '%s\n' "" "TrueType: $(date 2> /dev/null || :)" \
+      "================================================================================" "" >> "${sfd_name:?}.log"
+    # shellcheck disable=SC2016
+    fontforge -lang=ff -c 'Open($1); Generate($2)' "${sfd_name:?}.sfd" "${sfd_name:?}.ttf" >> "${sfd_name:?}.log" 2>&1; _E=$?
+    ./errnum "${_E:?}" >> "${sfd_name:?}.log" 2>&1; printf '%s' "$(./errnum "${_E:?}" || :)"
+    printf '%s\n' ""
+  done
+  exit 0
+fi
 
 trap '' SEGV > /dev/null 2>&1
 trap '' BUS  > /dev/null 2>&1
@@ -48,20 +69,15 @@ for gct_file in gct_*_; do
       | "${AWK:-awk}" -F_ ' { for (i=1; i <= NF; i++) printf "%s", toupper (substr ($i, 1, 1)) substr ($i, 2) }')"
     printf 'Converting %s:' "${sfd_name:?}"
 
-    printf '\t %s' " Stroke: "; printf '%s\n' "STROKE" "======" "" >> "${sfd_name:?}.log"
+    printf '\t %s' " Stroke: "; printf '%s\n' "STROKE: $(date 2> /dev/null || :)" \
+      "================================================================================" "" >> "${sfd_name:?}.log"
     ./convert_gct_stroke.py "${gct_file:?}" "${sfd_name:?}_Stroke.sfd" >> "${sfd_name:?}.log" 2>&1; _E=$?
     ./errnum "${_E:?}" >> "${sfd_name:?}.log" 2>&1; printf '%s' "$(./errnum "${_E:?}" || :)"
 
-    printf '\t %s' "Outline: "; printf '%s\n' "" "OUTLINE" "=======" "" >> "${sfd_name:?}.log"
+    printf '\t %s' "Outline: "; printf '%s\n' "" "OUTLINE: $(date 2> /dev/null || :)" \
+      "================================================================================" "" >> "${sfd_name:?}.log"
     ./convert_gct_outline.py "${gct_file:?}" "${sfd_name:?}.sfd" >> "${sfd_name:?}.log" 2>&1; _E=$?
     ./errnum "${_E:?}" >> "${sfd_name:?}.log" 2>&1; printf '%s' "$(./errnum "${_E:?}" || :)"
-
-    test -f "${sfd_name:?}.sfd" && {
-      printf '\t%s' "TrueType: "; printf '%s\n' "" "TrueType" "========" "" >> "${sfd_name:?}.log"
-      # shellcheck disable=SC2016
-      fontforge -lang=ff -c 'Open($1); Generate($2)' "${sfd_name:?}.sfd" "${sfd_name:?}.ttf" >> "${sfd_name:?}.log" 2>&1; _E=$?
-      ./errnum "${_E:?}" >> "${sfd_name:?}.log" 2>&1; printf '%s' "$(./errnum "${_E:?}" || :)"
-    }
 
     printf '%s\n' ""
   fi

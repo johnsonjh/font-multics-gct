@@ -7,6 +7,9 @@
 all run:
 	@./run.sh
 
+ttf:
+	@./run.sh "ttf"
+
 errnum: errnum.c
 
 clean:
