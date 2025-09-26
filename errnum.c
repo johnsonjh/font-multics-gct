@@ -131,9 +131,6 @@ main (int argc, char * * argv)
     (argv [1] == eptr || '\0' != * eptr)   ? "FATAL: Invalid number."        :
     (errnum < INT_MIN || errnum > INT_MAX) ? "FATAL: Number exceeds limits." : NULL;
 
-  if (fatal)
-    return (fprintf (stderr, "%s\n", fatal), EXIT_FAILURE);
-
   errint = (int)errnum;
 
   int xysh = (256 + 128 + 1 <= errint && errint < 256 + 128 + NSIG);
@@ -145,5 +142,8 @@ main (int argc, char * * argv)
   const char * lbl = xsig ? (xysh ? "yash signal" : xksh ? "ksh93 signal" : "signal") : "Error";
   const char * msg = msgfn (errx);
 
-  return fprintf (stdout, errnum ? "%s (%s %d)\n" : "Success\n", errnum ? msg : 0, lbl, errx), EXIT_SUCCESS;
+  (void)(fatal && fprintf (stderr, "%s\n", fatal));
+  (void)(! fatal && fprintf (stdout, errnum ? "%s (%s %d)\n" : "Success\n", errnum ? msg : 0, lbl, errx));
+
+  return fatal ? EXIT_FAILURE : EXIT_SUCCESS;
 }
