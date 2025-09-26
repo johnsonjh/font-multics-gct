@@ -18,6 +18,9 @@
 #if !defined (_OPENBSD_SOURCE)
 # define _OPENBSD_SOURCE
 #endif
+#if !defined (_DARWIN_C_SOURCE)
+# define _DARWIN_C_SOURCE
+#endif
 #if !defined (__BSD_VISIBLE)
 # define __BSD_VISIBLE 1
 #endif
@@ -37,8 +40,8 @@
 # include <xlocale.h>
 #endif
 
-#if defined (__FreeBSD__) || defined (__OpenBSD__) || defined (__NetBSD__) || defined (__illumos__) || \
-  ((defined (__sun) || defined (__sun__)) && (defined (__SVR4) || defined (__svr4__)))
+#if defined (__APPLE__) || defined (__FreeBSD__) || defined (__OpenBSD__) || defined (__NetBSD__) || \
+    defined (__illumos__) || ((defined (__sun) || defined (__sun__)) && (defined (__SVR4) || defined (__svr4__)))
 # include <sys/signal.h>
 #endif
 
