@@ -86,6 +86,7 @@ xstrerror_l (int errnum)
                exit (EXIT_FAILURE), (const char *)0) : buf);
 
   errno = saved;
+
   return ret;
 }
 
