@@ -5,6 +5,10 @@
  * scspell-id: 3a9b1772-98e3-11f0-b710-80ee73e9b8e7
  */
 
+/*
+ * Tested on AIX, PASE/OS400, Haiku, FreeBSD, OpenBSD, NetBSD, macOS, Solaris, illumos, and Linux.
+ */
+
 #if defined (_POSIX_C_SOURCE)
 # undef _POSIX_C_SOURCE
 #endif
