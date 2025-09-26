@@ -131,7 +131,7 @@ main (int argc, char * * argv)
     (argv [1] == eptr || '\0' != * eptr)   ? "FATAL: Invalid number."        :
     (errnum < INT_MIN || errnum > INT_MAX) ? "FATAL: Number exceeds limits." : NULL;
 
-  errint = (int)errnum;
+  errint = fatal ? 0 : (int)errnum;
 
   int xysh = (256 + 128 + 1 <= errint && errint < 256 + 128 + NSIG);
   int xksh = (! xysh && 256 + 1 <= errint && errint < 256 + NSIG);
