@@ -3,6 +3,15 @@
 <!-- scspell-id: 73135104-9b3c-11f0-b48f-80ee73e9b8e7 -->
 # font-multics-gct
 
+## Build
+
+* The build process has been tested on AIX, FreeBSD, and Linux.
+
+### Requirements
+
+* A C99 compiler, Python 3, and [Fontforge](https://fontforge.org/) (with Python support).
+* A POSIX conforming shell environment with ‘`awk`’, ‘`date`’, ‘`grep`’, ‘`make`’, and ‘`sed`’ utilities.
+
 ## Fontforge issues
 
 You need a recent version of **Fontforge** to successfully build the fonts.
