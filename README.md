@@ -21,7 +21,7 @@
 
 []()
 * To run the `lint` target (`make lint`), some additional tools are required:
-  * [`reuse`](https://github.com/fsfe/reuse-tool), [`codespell`](https://github.com/codespell-project/codespell), [Black](https://github.com/psf/black), [ShellCheck](https://www.shellcheck.net/), [Cppcheck](https://www.cppcheck.com/), and [Clang Analyzer](https://clang-analyzer.llvm.org/).
+  * [Black](https://github.com/psf/black), [ShellCheck](https://www.shellcheck.net/), [Cppcheck](https://www.cppcheck.com/), [Clang Analyzer](https://clang-analyzer.llvm.org/), [`reuse`](https://github.com/fsfe/reuse-tool), and [`codespell`](https://github.com/codespell-project/codespell).
 
 ## Fontforge issues
 
