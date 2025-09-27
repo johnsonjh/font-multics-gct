@@ -6,7 +6,7 @@
  */
 
 /*
- * Tested on AIX, PASE/OS400, Haiku, FreeBSD, OpenBSD, NetBSD, macOS, Solaris, illumos, and Linux.
+ * Tested on MinGW/Windows, AIX, PASE/OS400, Haiku, FreeBSD, OpenBSD, NetBSD, macOS, Solaris, illumos, and Linux.
  */
 
 #if defined (_POSIX_C_SOURCE)
