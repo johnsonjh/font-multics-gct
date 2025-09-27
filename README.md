@@ -12,6 +12,11 @@
 * A [C99 compiler](https://gcc.gnu.org/), [Python 3](https://www.python.org/), and [Fontforge](https://fontforge.org/) (with Python support).
 * A POSIX **shell** environment with the `awk`, `date`, `grep`, `make`, `rm`, and `sed` tools.
 * If your Python interpreter is not `python3`, minor modifications will be needed (*see* `grep 'python3' *`).
+[]()
+
+[]()
+* To run the `lint` target (`make lint`), some additional tools are required:
+  * [`reuse`](https://github.com/fsfe/reuse-tool), [`codespell`](https://github.com/codespell-project/codespell), [Black](https://github.com/psf/black), [ShellCheck](https://www.shellcheck.net/), [Cppcheck](https://www.cppcheck.com/), and [Clang Analyzer](https://clang-analyzer.llvm.org/).
 
 ## Fontforge issues
 
