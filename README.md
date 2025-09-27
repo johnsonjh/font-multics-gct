@@ -3,6 +3,10 @@
 <!-- scspell-id: 73135104-9b3c-11f0-b48f-80ee73e9b8e7 -->
 # font-multics-gct
 
+## Overview
+
+The font data was extracted from [`>ldd>unb>s>bound_graphic_fonts_.s.archive` (from Multics MR12.8)](https://dps8m.gitlab.io/sb/MR12.8/library_dir_dir/system_library_unbundled/source/bound_graphic_fonts_.s.archive/).
+
 ## Build
 
 * The build process has been tested on **AIX**, **FreeBSD**, and **Linux**.
