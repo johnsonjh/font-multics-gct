@@ -20,6 +20,7 @@ You need a recent version of **Fontforge** to successfully build the fonts.
 
 []()
 * If you see a warning messages such as the following, you have a **deficient** Fontforge:
+
   ```
   *** Glyph processing errors for gct_gothic_german_: 5 glyphs failed (z, l_brace, vert_bar, r_brace, tilde)
   ```
