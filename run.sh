@@ -25,7 +25,7 @@ check_for()
   done
 }
 
-check_for "${AWK:-awk}" "${CC:-cc}" "${DATE:-date}" "${GREP:-grep}" "${RM:-rm}" "${SED:-sed}" "fontforge" "python3"
+check_for "${AWK:-awk}" "${CC:-cc}" "${DATE:-date}" "${GREP:-grep}" "${RM:-rm}" "${SED:-sed}" "${FONTFORGE:-fontforge}" "python3"
 
 if [ "$1" != "ttf" ]; then
   test -x ./clean.sh && {
@@ -51,7 +51,7 @@ if [ "$1" = "ttf" ]; then
     printf 'Converting %s: \t%s' "${sfd_name:?}" "TrueType: "; printf '%s\n' "" "TrueType: $(date 2> /dev/null || :)" \
       "================================================================================" "" >> "${sfd_name:?}.log"
     # shellcheck disable=SC2016
-    fontforge -lang=ff -c 'Open($1); Generate($2)' "${sfd_name:?}.sfd" "${sfd_name:?}.ttf" >> "${sfd_name:?}.log" 2>&1; _E=$?
+    "${FONTFORGE:-fontforge}" -lang=ff -c 'Open($1); Generate($2)' "${sfd_name:?}.sfd" "${sfd_name:?}.ttf" >> "${sfd_name:?}.log" 2>&1; _E=$?
     ./errnum "${_E:?}" >> "${sfd_name:?}.log" 2>&1; printf '%s' "$(./errnum "${_E:?}" || :)"
     printf '%s\n' ""
   done
