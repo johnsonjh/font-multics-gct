@@ -16,9 +16,9 @@ clean:
 	@./clean.sh
 
 lint:
-	@rm -f errnum
+	@"$${RM:-rm}" -f errnum
 	scan-build --status-bugs make errnum
-	@rm -f errnum
+	@"$${RM:-rm}" -f errnum
 	cppcheck --quiet --force --check-level=exhaustive *.c
 	shellcheck -o any,all *.sh
 	black --check *.py
