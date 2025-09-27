@@ -22,7 +22,7 @@ lint:
 	cppcheck --quiet --force --check-level=exhaustive *.c
 	shellcheck -o any,all *.sh
 	black --check *.py
-	codespell -L Groupe .
+	codespell -L Groupe,PASE .
 	reuse lint -q || reuse lint
 
 .NOT_PARALLEL:
