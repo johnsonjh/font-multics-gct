@@ -5,12 +5,12 @@
 
 ## Build
 
-* The build process has been tested on AIX, FreeBSD, and Linux.
+* The build process has been tested on **AIX**, **FreeBSD**, and **Linux**.
 
 ### Requirements
 
-* A C99 compiler, Python 3, and [Fontforge](https://fontforge.org/) (with Python support).
-* A POSIX conforming shell environment with ‘`awk`’, ‘`date`’, ‘`grep`’, ‘`make`’, and ‘`sed`’ utilities.
+* A [C99 compiler](https://gcc.gnu.org/), [Python 3](https://www.python.org/), and [Fontforge](https://fontforge.org/) (with Python support).
+* A POSIX conforming shell environment with `awk`, `date`, `grep`, `make`, and `sed` utilities.
 
 ## Fontforge issues
 
@@ -29,11 +29,9 @@ You need a recent version of **Fontforge** to successfully build the fonts.
 
 []()
 * If you see warning messages such as the following, you have a **deficient** version of Fontforge:
-
-  ```
-  *** Glyph processing errors for gct_gothic_german_: 5 glyphs failed (z, l_brace, vert_bar, r_brace, tilde)
-  ```
+  \
+  `*** Glyph processing errors for gct_gothic_german_: 5 glyphs failed (z, l_brace, vert_bar, r_brace, tilde)`
 []()
 
 []()
-*  You can check your Fontforge version from the command-line with ‘`fontforge -v`’.
+*  You can check your Fontforge version from the command-line with `fontforge -v`.
