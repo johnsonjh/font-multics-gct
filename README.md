@@ -5,7 +5,8 @@
 
 ## Overview
 
-The font data was extracted from [`bound_graphic_fonts_.s.archive`](https://dps8m.gitlab.io/sb/MR12.8/library_dir_dir/system_library_unbundled/source/bound_graphic_fonts_.s.archive/) (from [Multics MR12.8](https://multics-wiki.swenson.org)).  You can see a mention of these fonts in this [**Multics Graphics System** PDF brochure](https://multicians.org/multics-graphics.pdf).
+* The font data was extracted from [`bound_graphic_fonts_.s.archive`](https://dps8m.gitlab.io/sb/MR12.8/library_dir_dir/system_library_unbundled/source/bound_graphic_fonts_.s.archive/) (from [Multics MR12.8](https://multics-wiki.swenson.org)).
+* You can see a mention of these fonts in print in this [**Multics Graphics System** brochure](https://multicians.org/multics-graphics.pdf) (PDF, 1980).
 
 ## Build
 
