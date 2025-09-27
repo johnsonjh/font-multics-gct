@@ -34,7 +34,8 @@ if [ "$1" != "ttf" ]; then
 fi
 
 test -x ./errnum || {
-  "${CC:-cc}" -o errnum errnum.c || {
+  # shellcheck disable=SC2086
+  "${CC:-cc}" ${CFLAGS:-} ${LDFLAGS:-} "errnum.c" -o "errnum" || {
     printf 'FATAL: %s\n' "errnum.c compilation failed" >&2
     exit 1
   }
