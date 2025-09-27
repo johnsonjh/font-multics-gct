@@ -9,6 +9,10 @@ test _`echo asdf 2>/dev/null` != _asdf >/dev/null &&\
   printf '%s\n' "FATAL: Using csh as sh is not supported." &&\
   exit 1
 
+if [ -n "${ZSH_VERSION:-}" ]; then
+  unsetopt NOMATCH > /dev/null 2>&1
+fi
+
 export POSIXLY_CORRECT=1
 export TZ=UTC
 
