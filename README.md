@@ -16,7 +16,7 @@
 
 * A [C99 compiler](https://gcc.gnu.org/), [Python 3](https://www.python.org/), and [Fontforge](https://fontforge.org/) (with Python support).
 * A POSIX **shell** environment with the `awk`, `date`, `grep`, `make`, `rm`, and `sed` tools.
-* If your Python interpreter is not `python3`, minor modifications will be needed (*see* `grep 'python3' *`).
+* If your Python interpreter is not `python3`, minor modifications will be needed (*see* `grep python3 *`).
 []()
 
 []()
