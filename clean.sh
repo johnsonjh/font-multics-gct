@@ -9,4 +9,4 @@ test _`echo asdf 2>/dev/null` != _asdf >/dev/null &&\
   printf '%s\n' "FATAL: Using csh as sh is not supported." &&\
   exit 1
 
-rm -f ./a.out ./errnum ./*.sfd ./*.ttf ./*.log ./core-* ./*.core ./core
+"${RM:-rm}" -f ./a.out ./errnum ./*.sfd ./*.ttf ./*.log ./core-* ./*.core ./core

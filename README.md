@@ -10,7 +10,7 @@
 ### Requirements
 
 * A [C99 compiler](https://gcc.gnu.org/), [Python 3](https://www.python.org/), and [Fontforge](https://fontforge.org/) (with Python support).
-* A POSIX conforming shell environment with `awk`, `date`, `grep`, `make`, and `sed` utilities.
+* A POSIX **shell** environment with the `awk`, `date`, `grep`, `make`, `rm`, and `sed` utilities.
 
 ## Fontforge issues
 

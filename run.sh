@@ -25,7 +25,7 @@ check_for()
   done
 }
 
-check_for "${AWK:-awk}" "${CC:-cc}" "${DATE:-date}" "${GREP:-grep}" "${SED:-sed}" "fontforge" "python3"
+check_for "${AWK:-awk}" "${CC:-cc}" "${DATE:-date}" "${GREP:-grep}" "${RM:-rm}" "${SED:-sed}" "fontforge" "python3"
 
 if [ "$1" != "ttf" ]; then
   test -x ./clean.sh && {
